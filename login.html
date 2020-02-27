@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+  <link rel="stylesheet" href="css/animate.css">
+
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="css/magnific-popup.css">
+
+  <link rel="stylesheet" href="css/aos.css">
+
+  <link rel="stylesheet" href="css/ionicons.min.css">
+
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+
+
+  <link rel="stylesheet" href="css/flaticon.css">
+  <link rel="stylesheet" href="css/icomoon.css">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Login</title>
+
+  <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+</head>
+
+<body>
+ <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Rustic Cut</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="oi oi-menu"></span> Menu
+    </button>
+
+    <div class="collapse navbar-collapse" id="ftco-nav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+       
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="ftco-section contact-section">
+  <section class="clean-block clean-form dark">
+    <div class="container">
+      <div class="block-heading">
+
+       <h1 class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }" style="opacity: 0.792126; transform: translateZ(0px) translateY(-3.89764%);">Acesse sua conta</h1>
+     </div>
+     <form>
+      <div class="form-group"><label>Email</label><input type="email" name="email" style="width:500px;" placeholder="E-mail" id= "email" required class="form-control input-lg" />
+      </div>
+      <div class="form-group"><label>Senha</label><input type="password" style="width:500px;" class="form-control input-lg" id="password" placeholder="Senha" required="" /> 
+
+       <label for="name" class="" id="achado" style="margin-left:10px;" ></label>     </div>
+       <div class="form-group"><button class="btn btn-primary btn-block" id="go" style="width:100px;" type="button">Entrar</button></div>
+       <div class="form-group"><button class="btn btn-primary btn-block" id="cadastrar" style="width:100px;" type="button">Cadastre-se</button></div>
+     </form>
+   </div>
+ </section>
+ <script >
+                  // Initialize Firebase
+                  var config = {
+                    apiKey: "AIzaSyCjzgnkXen69TGkVWKQZmCELnR-eQHjRe0",
+                    authDomain: "rusticcutbarber.firebaseapp.com",
+                    databaseURL: "https://rusticcutbarber.firebaseio.com",
+                    projectId: "rusticcutbarber",
+                    storageBucket: "rusticcutbarber.appspot.com",
+                    messagingSenderId: "412308247289"
+                  };
+                  firebase.initializeApp(config);
+
+        //get password and email
+        const txtemail = document.getElementById('email');
+        const txtpassword = document.getElementById('password');
+        firebase.auth().signOut();
+
+        //usado pra que nao haja mais de 3 tentativas com senhas diferentes 
+        var emailSec = sessionStorage.getItem("emailSec");
+        console.log('emailSec:'+emailSec);
+        var tentativa= sessionStorage.getItem("tentativa");
+        console.log('tentativa:'+tentativa);
+        var trava =0;
+
+        
+       
+        
+      
+
+                  //add login event
+                  go.addEventListener ('click', e => {
+                    var data = new Date(); //pega a data
+                    var segundos = data.getSeconds(); //pega o dia da semana
+                    var minutos = data.getMinutes(); //pega o dia da semana
+                    var segundosSec = sessionStorage.getItem("seconds");
+                    var minutoSec = sessionStorage.getItem("minutes");
+                    
+                    
+                    var tp= parseInt(segundos+(minutos*60),10);
+                    console.log('tempo='+tp);
+                    
+                    var tpSec= parseInt(segundosSec,10)+parseInt(minutoSec,10)*60;
+                    console.log('tempo2='+tpSec);
+                    if( (tp>tpSec) && (trava=="1"))
+                    {
+                      console.log('destravado');
+                      trava=0;
+                      tentativa=0;
+                      sessionStorage.setItem("tentativa", tentativa);
+                    }
+                    if(tentativa<3 )
+                    {
+                    //get email and pass
+                    const email = txtemail;
+                    const password = txtpassword;
+                    const auth = firebase.auth();
+
+                    //Sign in
+                    const promise = auth.signInWithEmailAndPassword (email.value,password.value);
+                    promise.catch (e=> {console.log(e.message+'cod:'+e.code);
+                                
+                                  if(emailSec==email.value){
+                                    console.log('repetido');
+                                    tentativa=parseInt(tentativa,10)+1;
+                                    sessionStorage.setItem("tentativa", parseInt(tentativa,10));
+                                    console.log('tentativa:'+tentativa);
+                                  }
+                                  sessionStorage.setItem("emailSec", email.value);
+                                  document.getElementById('achado').style.color = "red";
+                                  document.getElementById("achado").textContent = 'não achado';
+                                  console.log ('nao existe');
+                                  
+
+
+
+                    });
+
+                    e.stopPropagation();
+
+                  }//fim do se tentativa menor que 3
+                  else if(trava==0){
+                    trava=1;
+                    console.log('setado');
+                  sessionStorage.setItem("seconds", (data.getSeconds()+60)%60);  
+                  sessionStorage.setItem("hour", data.getHours());
+                  sessionStorage.setItem("minutes", data.getMinutes()+Math.floor((data.getSeconds()+60)/60));
+                  document.getElementById('achado').style.color = "red";
+                  document.getElementById("achado").textContent = 'você já tentou 3 vezes aguarde aguarde 1 minuto para tentar de novo';
+                  }
+
+                  });
+
+                  cadastrar.addEventListener ('click', e => {
+
+                    window.location.href = "cadastro.html";
+
+                  });
+
+
+                  
+
+                  firebase.auth().onAuthStateChanged (firebaseUser => {// so entra aqui se o usuario ja tiver cadastrado
+
+                    console.log(txtemail);
+                    var existe = 0;
+
+                    //////////////////////////
+
+
+
+                    var ref = firebase.storage().ref("clientes/"+txtemail.value+"/info").getDownloadURL().then(onResolve, onReject);//verifica se o usuario é um cliente
+
+                    function onResolve(foundURL) { 
+                                  //aviso de cpf encontrado
+                                  document.getElementById('achado').style.color = "green";
+                                  document.getElementById("achado").textContent = 'achado';
+
+                                  existe=1;
+                                  if(firebaseUser){
+                                 
+
+                                   window.location.href = "cliente/area_cliente.html" ;
+                                 }
+                                 else {
+                                  console.log('not loged');
+                                }
+
+
+                              } 
+                              function onReject(error){ 
+                                  //aviso de cpf encontrado
+                                
+                                  //se o email nao pertence a uma pessoa verifica-se se ele pertence a uma instituição
+                                  var ref = firebase.storage().ref("admin/"+txtemail.value+"/info").getDownloadURL().then(onResolve, onReject);
+
+                                  function onResolve(foundURL) { 
+                                  //aviso de cpf encontrado
+                                  document.getElementById('achado').style.color = "green";
+                                  document.getElementById("achado").textContent = 'achado';
+
+                                  existe=1;
+                                  if(firebaseUser){
+                                  
+
+                                   window.location.href = "admin/area_admin.html";
+                                 }
+                                 else {
+                                  console.log('not loged');
+                                }
+
+
+                              } 
+                        //apagar esta função para refatoração do codigo, pois se o codigo esta sem bugs esta função nunca sera chamada.
+                        function onReject(error){ //se entrar nesta função significa que o email nao foi achado nem como pessoal nem como institucional, porem se entra na função pai desta significa que o email ja esta cadastrado, resumindo, esta função nunca pode ser chamada, se ela for chamada é que existe algum erro no codigo
+                                  //aviso de cpf encontrado
+                               
+                                  
+                                }
+
+
+                              }
+
+                              if(existe==1){
+                                console.log ('existe');
+                              }
+                    //////////////////////////
+
+
+
+                  });
+
+
+</script>
+
+</section>
+<footer class="page-footer dark">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3">
+        <h5>Comece agora mesmo</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="cadastro.html">Cadastre-se</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+</footer>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.easing.1.3.js"></script>
+  <script src="js/jquery.waypoints.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.animateNumber.min.js"></script>
+  <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/jquery.timepicker.min.js"></script>
+  <script src="js/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="js/google-map.js"></script>
+  <script src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+
+</body>
+
+</html>
