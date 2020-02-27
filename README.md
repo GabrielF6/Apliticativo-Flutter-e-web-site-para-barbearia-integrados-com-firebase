@@ -1,1 +1,1 @@
-askdjhfaksdjf
+Este projeto contém uma aplicação flutter com um web site para uma barbearia, para cadastro de cliente, upload de fotos da barbearia e agendamento de horário de corte por parte do cliente. Ambos aplicação e site estão integrados ao firebase, usando o firestorage e o auth.
